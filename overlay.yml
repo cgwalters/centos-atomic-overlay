@@ -41,6 +41,8 @@ components:
       branch: f24
 
   - src: github:projectatomic/atomic
+    distgit:
+      branch: master
 
   - distgit: etcd
 
