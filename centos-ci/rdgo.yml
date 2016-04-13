@@ -1,0 +1,16 @@
+- job:
+    name: atomic-rdgo-centos7
+    node: atomic-sig-ci-slave01 
+    builders:
+        - shell: |
+            #!/bin/bash -ex
+            set -o pipefail
+            echo "hello"
+            sleep 3
+            echo "world"
+
+# create the jobs using the job templates
+- project:
+    name: atomic-rdgo
+    jobs:
+      - atomic-rdgo-centos7
