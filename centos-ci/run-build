@@ -1,0 +1,29 @@
+#!/bin/bash
+set -xeuo pipefail
+
+export RSYNC_PASSWORD='@RSYNC_PASSWORD@'
+
+build=centos-continuous
+
+rsync --stats -av sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo/${build} .
+origdir=$(pwd)
+cd ${build}
+if ! test -L overlay.yml; then
+    ln -s ../continuous-atomic-overlay/overlay.yml .
+fi
+if ! test -d src; then
+    rpmdistro-gitoverlay init
+fi    
+rpmdistro-gitoverlay resolve --fetch-all --touch-if-changed fetch.stamp
+if ! test -f fetch.stamp; then
+    exit 0
+fi
+build_success=false
+if rpmdistro-gitoverlay build --touch-if-changed build.stamp --logdir=${origdir}/build-logs; then
+    build_success=true
+fi
+cd ..
+rsync --stats -av --delete ${build}/ sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo/${build}/
+if test "${build_success}" = false; then
+    echo "Build failed, see logs above"; exit 1
+fi

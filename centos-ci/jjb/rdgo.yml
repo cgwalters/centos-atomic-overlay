@@ -1,0 +1,71 @@
+- job:
+    name: atomic-rdgo-centos7
+    node: atomic-sig-ci-slave01 
+    scm:
+      - git:
+          url: "https://github.com/cgwalters/continuous-atomic-overlay"
+          branches:
+            - centos-ci-dev
+          basedir: continuous-atomic-overlay
+    wrappers:
+      - workspace-cleanup
+    builders:
+      - inject:
+          properties-content: ANSIBLE_HOST_KEY_CHECKING=False
+      - shell: |
+          #!/bin/bash
+          set -xeuo pipefail
+          exec continuous-atomic-overlay/centos-ci/duffy-provision
+      - inject:
+          properties-file: job.props
+      - shell: |
+          #!/bin/bash
+          set -xeuo pipefail
+
+          cleanup() {
+            $WORKSPACE/continuous-atomic-overlay/centos-ci/duffy-teardown
+          }
+          trap cleanup EXIT
+
+          ssh-keygen -t ed25519 -P '' -f builder.key
+          cd continuous-atomic-overlay/centos-ci/setup
+          ansible-playbook -v -i $WORKSPACE/inventory -u root setup-system.yml
+          cd $WORKSPACE
+
+          # From here on out we assume only one node, so we can get interactive
+          # progress in the Jenkins log
+          node=$(grep ci.centos.org inventory | head -1)
+          set +x
+          sed -e 's,@RSYNC_PASSWORD@,'$(cat ~/duffy.key | cut -c '-13')',' < continuous-atomic-overlay/centos-ci/run-build > run-build
+          set -x
+          chmod a+x run-build
+          scp -i ${WORKSPACE}/builder.key run-build builder@${node}:
+          rsync -Hrlptv --stats -e "ssh -i ${WORKSPACE}/builder.key" continuous-atomic-overlay builder@${node}:
+          build_success=true
+          if ! ssh -tt -i ${WORKSPACE}/builder.key builder@${node} ./run-build; then
+            build_success=false
+          fi
+          rsync -Hrlptv --stats -e "ssh -i ${WORKSPACE}/builder.key" builder@${node}:build-logs $WORKSPACE/build-logs || true
+          # Exit with code from the build
+          if test "${build_success}" = "false"; then
+            echo 'Build failed, see logs above'; exit 1
+          fi
+            
+    publishers:
+      - archive:
+          artifacts: 'build-logs/**'
+          allow-empty: 'true'
+
+      - postbuildscript:
+          script-only-if-succeeded: false
+          builders:
+            - shell: |
+                #!/bin/bash
+                set -xeuo pipefail
+                exec continuous-atomic-overlay/centos-ci/duffy-teardown
+
+# create the jobs using the job templates
+- project:
+    name: atomic-rdgo
+    jobs:
+      - atomic-rdgo-centos7
