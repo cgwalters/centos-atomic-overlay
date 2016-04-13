@@ -1,0 +1,19 @@
+---
+- command: rsync -av sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo .
+
+- command: rpmdistro-gitoverlay resolve --fetch-all --touch-if-changed fetch.stamp
+  args:
+    chdir: rdgo
+  changed_when: false
+
+- stat: rdgo/fetch.stamp
+  register: fetch
+  changed_when: false
+  always_run: yes
+
+- command: rpmdistro-gitoverlay build
+  args:
+    chdir: rdgo
+  when: fetch.stat.exists
+
+- command: rsync -av --delete rdgo/ sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo/
