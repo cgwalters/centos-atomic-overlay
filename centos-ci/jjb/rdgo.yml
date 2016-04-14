@@ -1,13 +1,57 @@
 - job:
     name: atomic-rdgo-centos7
     node: atomic-sig-ci-slave01 
+    scm:
+      - git:
+          url: "https://github.com/cgwalters/continuous-atomic-overlay"
+          branches:
+            - centos-ci-dev
     builders:
-        - shell: |
-            #!/bin/bash -ex
-            set -o pipefail
-            echo "hello"
-            sleep 3
-            echo "world"
+        - inject:
+            properties-content: ANSIBLE_HOST_KEY_CHECKING=False
+        - python: |
+          import json, urllib, subprocess, sys
+
+          url_base="http://admin.ci.centos.org:8080"
+          api_key=open('duffy.key').read().strip()
+
+          ver="7"
+          arch="x86_64"
+          count=1
+
+          get_nodes_url="%s/Node/get?key=%s&ver=%s&arch=%s&count=%s" % (url_base,api_key,ver,arch,count)
+
+          b=json.load(urllib.urlopen(get_nodes_url))
+          hosts=b['hosts']
+          ssid=b['ssid']
+          with open('job.props', 'w') as f:
+              f.write('DUFFY_SSID={}\n'.format(ssid))
+          with open('inventory', 'w') as f:
+              f.write('[all]\n')
+              for host in hosts:
+                  f.write(host + '\n')
+      - inject:
+          properties-file: job.props
+       - shell: |
+           #!/bin/bash
+           set -xeuo pipefail
+
+           ssh-keygen -t ed25519 -P '' -f builder.key
+           cd continuous-atomic-overlay/centos-ci/setup
+           ansible-playbook -i inventory -u root setup-system.yml
+           ansible-playbook -i inventory -u builder run-build.yml
+    publishers:
+      - python: |
+          import urllib
+
+          url_base="http://admin.ci.centos.org:8080"
+          api_key=open('duffy.key').read().strip()
+          ssid = os.environ['DUFFY_SSID']
+
+          print "Tearing down SSID" + ssid
+          done_nodes_url="%s/Node/done?key=%s&ssid=%s" % (url_base, api_key, ssid)
+          urllib.urlopen(done_nodes_url)
+          print "Teardown complete"
 
 # create the jobs using the job templates
 - project:

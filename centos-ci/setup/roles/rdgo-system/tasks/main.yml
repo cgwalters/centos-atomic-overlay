@@ -18,3 +18,7 @@
     - rpmdistro-gitoverlay
 
 - user: name=builder groups=mock
+
+- authorized_key:
+    user: builder
+    key: "{{ lookup('file', '~/builder-key.pub') }}"
