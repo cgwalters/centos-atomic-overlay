@@ -1,4 +1,6 @@
 ---
+- include: epel7.yml
+
 - copy:
     dest: /etc/yum.repos.d/walters-buildtools.repo
     content: |
