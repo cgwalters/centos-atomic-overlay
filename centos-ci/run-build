@@ -6,7 +6,9 @@ export RSYNC_PASSWORD='@RSYNC_PASSWORD@'
 rsync --progress -av sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo .
 origdir=$(pwd)
 cd rdgo
-ln -s ../continuous-atomic-overlay/overlay.yml .
+if ! test -L overlay.yml; then
+    ln -s ../continuous-atomic-overlay/overlay.yml .
+fi
 if ! test -d src; then
     rpmdistro-gitoverlay init
 fi    
