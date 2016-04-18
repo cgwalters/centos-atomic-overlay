@@ -23,4 +23,4 @@
 
 - authorized_key:
     user: builder
-    key: "{{ lookup('file', '~/builder-key.pub') }}"
+    key: "{{ builder_pubkey }}"
