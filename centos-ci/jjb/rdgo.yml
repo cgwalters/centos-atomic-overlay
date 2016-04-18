@@ -35,7 +35,8 @@
           # From here on out we assume only one node, so we can get interactive
           # progress in the Jenkins log
           node=$(grep ci.centos.org inventory | head -1)
-          ssh -tt -i ${WORKSPACE}/builder.key builder@${node} continuous-atomic-overlay/centos-ci/run-build
+          scp -i ${WORKSPACE}/builder.key continuous-atomic-overlay/centos-ci/run-build builder@${node}:
+          ssh -tt -i ${WORKSPACE}/builder.key builder@${node} run-build
     publishers:
       - postbuildscript:
           script-only-if-succeeded: false
