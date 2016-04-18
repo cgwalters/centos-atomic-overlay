@@ -17,6 +17,7 @@
   with_items:
     - rsync
     - mock
+    - fedpkg
     - rpmdistro-gitoverlay
 
 - user: name=builder groups=mock
