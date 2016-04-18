@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import urllib
 
 url_base="http://admin.ci.centos.org:8080"

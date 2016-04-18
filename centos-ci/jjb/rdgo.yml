@@ -29,7 +29,7 @@
 
           ssh-keygen -t ed25519 -P '' -f builder.key
           cd continuous-atomic-overlay/centos-ci/setup
-          ansible-playbook -v -i $WORKSPACE/inventory -u root -e builder_pubkey="$(cat $WORKSPACE/builder.key.pub)" setup-system.yml
+          ansible-playbook -v -i $WORKSPACE/inventory -u root setup-system.yml
           export ANSIBLE_SSH_ARGS="-i $WORKSPACE/builder.key"
           ansible-playbook -v -i $WORKSPACE/inventory -u builder run-build.yml
     publishers:
