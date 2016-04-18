@@ -41,8 +41,18 @@
           chmod a+x run-build
           scp -i ${WORKSPACE}/builder.key run-build builder@${node}:
           rsync -rv --progress -e "ssh -i ${WORKSPACE}/builder.key" continuous-atomic-overlay builder@${node}:
-          ssh -tt -i ${WORKSPACE}/builder.key builder@${node} ./run-build
+          if ! ssh -tt -i ${WORKSPACE}/builder.key builder@${node} ./run-build; then
+            echo 'Build failed'
+            rc=1
+          else
+            rc=0
+          fi
+          rsync -rv --progress -e "ssh -i ${WORKSPACE}/builder.key" builder@${node}:build-logs $WORKSPACE/build-logs || true
     publishers:
+      - archive:
+          artifacts: 'build-logs/**'
+          allow-empty: 'true'
+
       - postbuildscript:
           script-only-if-succeeded: false
           builders:
