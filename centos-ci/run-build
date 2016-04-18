@@ -4,6 +4,7 @@ set -xeuo pipefail
 export RSYNC_PASSWORD='@RSYNC_PASSWORD@'
 
 rsync --progress -av sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo .
+origdir=$(pwd)
 cd rdgo
 ln -s ../continuous-atomic-overlay/overlay.yml .
 if ! test -d src; then
@@ -14,7 +15,7 @@ if ! test -f fetch.stamp; then
     exit 0
 fi
 build_success=false
-if rpmdistro-gitoverlay build --touch-if-changed build.stamp --logdir=build-logs; then
+if rpmdistro-gitoverlay build --touch-if-changed build.stamp --logdir=${origdir}/build-logs; then
     build_success=true
 fi
 cd ..
