@@ -1,6 +1,8 @@
 #!/bin/bash
 set -xeuo pipefail
 
+export RSYNC_PASSWORD='@RSYNC_PASSWORD@'
+
 rsync --progress -av sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo .
 cd rdgo
 rpmdistro-gitoverlay resolve --fetch-all --touch-if-changed fetch.stamp

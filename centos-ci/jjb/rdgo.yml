@@ -35,7 +35,11 @@
           # From here on out we assume only one node, so we can get interactive
           # progress in the Jenkins log
           node=$(grep ci.centos.org inventory | head -1)
-          scp -i ${WORKSPACE}/builder.key continuous-atomic-overlay/centos-ci/run-build builder@${node}:
+          set +x
+          sed -e 's,@RSYNC_PASSWORD@,'$(cat ~/duffy.key | cut -c '-13')',' < continuous-atomic-overlay/centos-ci/run-build > run-build
+          set -x
+          chmod a+x run-build
+          scp -i ${WORKSPACE}/builder.key run-build builder@${node}:
           ssh -tt -i ${WORKSPACE}/builder.key builder@${node} ./run-build
     publishers:
       - postbuildscript:
