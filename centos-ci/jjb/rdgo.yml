@@ -40,7 +40,7 @@
           set -x
           chmod a+x run-build
           scp -i ${WORKSPACE}/builder.key run-build builder@${node}:
-          rsync -rv --progress -e "ssh -i ${WORKSPACE}/builder.key" continuous-atomic-overlay builder@${node}:
+          rsync -Hrlptv --progress -e "ssh -i ${WORKSPACE}/builder.key" continuous-atomic-overlay builder@${node}:
           build_success=true
           if ! ssh -tt -i ${WORKSPACE}/builder.key builder@${node} ./run-build; then
             build_success=false
