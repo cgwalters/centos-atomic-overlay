@@ -17,6 +17,7 @@ ssid=b['ssid']
 print "Provisioned {} hosts with DUFFY_SSID={}".format(len(hosts), ssid)
 with open('job.props', 'w') as f:
     f.write('DUFFY_SSID={}\n'.format(ssid))
+    f.write('RSYNC_PASSWORD={}\n'.format(ssid[:13]))
 with open('inventory', 'w') as f:
     f.write('[all]\n')
     for host in hosts:
