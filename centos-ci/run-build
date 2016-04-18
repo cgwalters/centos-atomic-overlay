@@ -5,6 +5,7 @@ export RSYNC_PASSWORD='@RSYNC_PASSWORD@'
 
 rsync --progress -av sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo .
 cd rdgo
+ln -s ../continuous-atomic-overlay/overlay.yml .
 rpmdistro-gitoverlay resolve --fetch-all --touch-if-changed fetch.stamp
 if ! test -f fetch.stamp; then
     exit 0
