@@ -23,4 +23,4 @@
 
 - authorized_key:
     user: builder
-    key: "{{ lookup('file', lookup('env', 'WORKSPACE') + '/builder.key.pub' }} "
+    key: "{{ lookup('file', lookup('env', 'WORKSPACE') + '/builder.key.pub') }}"
