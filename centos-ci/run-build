@@ -1,0 +1,15 @@
+#!/bin/bash
+set -xeuo pipefail
+
+rsync --progress -av sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo .
+cd rdgo
+rpmdistro-gitoverlay resolve --fetch-all --touch-if-changed fetch.stamp
+if ! test -f fetch.stamp; then
+    exit 0
+fi
+rpmdistro-gitoverlay build --touch-if-changed build.stamp
+if ! test -f build.stamp; then
+    exit 0
+fi
+cd ..
+rsync --progress -av --delete rdgo/ sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo/

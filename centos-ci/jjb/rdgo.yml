@@ -30,8 +30,12 @@
           ssh-keygen -t ed25519 -P '' -f builder.key
           cd continuous-atomic-overlay/centos-ci/setup
           ansible-playbook -v -i $WORKSPACE/inventory -u root setup-system.yml
-          export ANSIBLE_SSH_ARGS="-i $WORKSPACE/builder.key"
-          ansible-playbook -v -i $WORKSPACE/inventory -u builder run-build.yml
+          cd $WORKSPACE
+
+          # From here on out we assume only one node, so we can get interactive
+          # progress in the Jenkins log
+          node=$(grep ci.centos.org inventory | head -1)
+          ssh -tt -i ${WORKSPACE}/builder.key builder@${node} continuous-atomic-overlay/centos-ci/run-build
     publishers:
       - postbuildscript:
           script-only-if-succeeded: false
