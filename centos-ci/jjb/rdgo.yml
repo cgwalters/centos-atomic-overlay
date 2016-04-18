@@ -12,52 +12,34 @@
     builders:
       - inject:
           properties-content: ANSIBLE_HOST_KEY_CHECKING=False
-      - python: |
-          import json, urllib, subprocess, sys, os
-    
-          url_base="http://admin.ci.centos.org:8080"
-          api_key=open(os.path.expanduser('~/duffy.key')).read().strip()
-    
-          ver="7"
-          arch="x86_64"
-          count=1
-    
-          get_nodes_url="%s/Node/get?key=%s&ver=%s&arch=%s&count=%s" % (url_base,api_key,ver,arch,count)
-    
-          b=json.load(urllib.urlopen(get_nodes_url))
-          hosts=b['hosts']
-          ssid=b['ssid']
-          with open('job.props', 'w') as f:
-              f.write('DUFFY_SSID={}\n'.format(ssid))
-          with open('inventory', 'w') as f:
-              f.write('[all]\n')
-              for host in hosts:
-                  f.write(host + '\n')
+      - shell: |
+          #!/bin/bash
+          set -xeuo pipefail
+          exec continuous-atomic-overlay/centos-ci/duffy-provision
       - inject:
           properties-file: job.props
       - shell: |
           #!/bin/bash
           set -xeuo pipefail
 
+          cleanup() {
+            $WORKSPACE/continuous-atomic-overlay/centos-ci/duffy-teardown
+          }
+          trap cleanup EXIT
+
           ssh-keygen -t ed25519 -P '' -f builder.key
           cd continuous-atomic-overlay/centos-ci/setup
-          ansible-playbook -i $WORKSPACE/inventory -u root setup-system.yml
-          ansible-playbook -i $WORKSPACE/inventory -u builder run-build.yml
+          ansible-playbook -v -i $WORKSPACE/inventory -u root setup-system.yml
+          export ANSIBLE_SSH_ARGS="-i $WORKSPACE/builder"
+          ansible-playbook -v -i $WORKSPACE/inventory -u builder run-build.yml
     publishers:
       - postbuildscript:
           script-only-if-succeeded: false
           builders:
-            - python: |
-                import urllib
-
-                url_base="http://admin.ci.centos.org:8080"
-                api_key=open('duffy.key').read().strip()
-                ssid = os.environ['DUFFY_SSID']
-
-                print "Tearing down SSID" + ssid
-                done_nodes_url="%s/Node/done?key=%s&ssid=%s" % (url_base, api_key, ssid)
-                urllib.urlopen(done_nodes_url)
-                print "Teardown complete"
+            - shell: |
+                #!/bin/bash
+                set -xeuo pipefail
+                exec continuous-atomic-overlay/centos-ci/duffy-teardown
 
 # create the jobs using the job templates
 - project:
