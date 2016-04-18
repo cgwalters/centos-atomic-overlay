@@ -42,12 +42,17 @@
           scp -i ${WORKSPACE}/builder.key run-build builder@${node}:
           rsync -rv --progress -e "ssh -i ${WORKSPACE}/builder.key" continuous-atomic-overlay builder@${node}:
           if ! ssh -tt -i ${WORKSPACE}/builder.key builder@${node} ./run-build; then
-            echo 'Build failed'
-            rc=1
+            rc="$?"
           else
             rc=0
           fi
           rsync -rv --progress -e "ssh -i ${WORKSPACE}/builder.key" builder@${node}:build-logs $WORKSPACE/build-logs || true
+          # Exit with code from the build
+          if test $rc '!=' 0; then
+            echo 'Build failed'
+            echo $rc
+          fi
+            
     publishers:
       - archive:
           artifacts: 'build-logs/**'
