@@ -14,14 +14,23 @@ fi
 if ! test -d src; then
     rpmdistro-gitoverlay init
 fi    
+
+# Create this now so it always exists for Jenkins
+mkdir -p ${origdir}/build-logs
+
+# Git fetch all the things
 rpmdistro-gitoverlay resolve --fetch-all --touch-if-changed fetch.stamp
 if ! test -f fetch.stamp; then
     exit 0
 fi
+
+# Do a build if something changed
 build_success=false
 if rpmdistro-gitoverlay build --touch-if-changed build.stamp --logdir=${origdir}/build-logs; then
     build_success=true
 fi
+
+# However, we always rsync results, since we want to cache partially built artifacts
 cd ..
 rsync --stats -av --delete ${build}/ sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo/${build}/
 if test "${build_success}" = false; then
