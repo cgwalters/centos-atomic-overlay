@@ -4,6 +4,12 @@
     description: |
         This job tracks Project Atomic git upstream and generates RPM content
         for CentOS 7.  The results are stored in <a href="https://ci.centos.org/artifacts/sig-atomic/rdgo/centos-continuous/">CentOS CI Artifacts</a><br>
+        rpm-md repo configuration:
+        <pre>
+        [atomic-centos-continuous]
+        baseurl=https://ci.centos.org/artifacts/sig-atomic/rdgo/centos-continuous/build
+        gpgcheck=0
+        </pre>
         JJB Code Location: <a href="https://github.com/cgwalters/continuous-atomic-overlay">https://github.com/cgwalters/continuous-atomic-overlay</a><br>
         Managed by Jenkins Job Builder. Do not edit via web.<br>
     scm:
