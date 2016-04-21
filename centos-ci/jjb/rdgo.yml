@@ -1,6 +1,11 @@
 - job:
     name: atomic-rdgo-centos7
     node: atomic-sig-ci-slave01 
+    description: |
+        This job tracks Project Atomic git upstream and generates RPM content
+        for CentOS 7.  The results are stored in <a href="https://ci.centos.org/artifacts/sig-atomic/rdgo/centos-continuous/">CentOS CI Artifacts</a><br>
+        JJB Code Location: <a href="https://github.com/cgwalters/continuous-atomic-overlay">https://github.com/cgwalters/continuous-atomic-overlay</a><br>
+        Managed by Jenkins Job Builder. Do not edit via web.<br>
     scm:
       - git:
           url: "https://github.com/cgwalters/continuous-atomic-overlay"
