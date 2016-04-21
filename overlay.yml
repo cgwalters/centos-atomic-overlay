@@ -40,6 +40,10 @@ components:
       name: python-docker-py
       branch: f24
 
+  - distgit: go-srpm-macros
+
+  - distgit: go-compilers
+
   - src: github:projectatomic/atomic
     distgit:
       branch: master
