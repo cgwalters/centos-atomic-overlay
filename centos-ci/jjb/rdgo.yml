@@ -18,6 +18,10 @@
           branches:
             - centos-ci-dev
           basedir: continuous-atomic-overlay
+    triggers:
+      - github
+      - timed: "H * * * *"
+
     wrappers:
       - workspace-cleanup
     builders:
