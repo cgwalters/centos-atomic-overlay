@@ -30,6 +30,9 @@ cache:
   buildserial: 0
 
 components:
+  # - src: github.com/projectatomic/bubblewrap
+  #   spec: internal
+
   - src: distgit
     distgit:
       name: python-ipaddress
@@ -45,6 +48,10 @@ components:
   - distgit: go-compilers
 
   - src: github:projectatomic/atomic
+    distgit:
+      branch: master
+
+  - src: github:projectatomic/skopeo
     distgit:
       branch: master
 
