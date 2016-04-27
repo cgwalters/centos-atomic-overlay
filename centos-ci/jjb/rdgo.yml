@@ -15,8 +15,6 @@
     scm:
       - git:
           url: "https://github.com/cgwalters/continuous-atomic-overlay"
-          branches:
-            - centos-ci-dev
           basedir: continuous-atomic-overlay
     triggers:
       - github
