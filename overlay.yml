@@ -30,7 +30,7 @@ cache:
   buildserial: 0
 
 components:
-  - src: github.com/projectatomic/bubblewrap
+  - src: github:projectatomic/bubblewrap
     spec: internal
 
   - src: distgit
