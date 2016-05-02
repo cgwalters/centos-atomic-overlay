@@ -33,6 +33,8 @@ components:
   - src: github:projectatomic/bubblewrap
     spec: internal
 
+  - src: github:projectatomic/atomic-devmode
+
   - src: distgit
     distgit:
       name: python-ipaddress
