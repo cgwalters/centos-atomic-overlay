@@ -35,6 +35,9 @@ components:
 
   - src: github:projectatomic/atomic-devmode
 
+  - src: github:projectatomic/commissaire
+    spec: internal
+
   - src: distgit
     distgit:
       name: python-ipaddress
