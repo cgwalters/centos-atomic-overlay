@@ -50,14 +50,14 @@
           ansible-playbook -v -i $WORKSPACE/inventory -u root setup-system.yml
           cd $WORKSPACE
 
-          (echo -n "export RSYNC_PASSWORD=" && $(cat ~/duffy.key | cut -c '-13')) > rsync-password.sh
+          (echo -n "export RSYNC_PASSWORD=" && cat ~/duffy.key | cut -c '-13') > rsync-password.sh
 
           # From here on out we assume only one node, so we can get interactive
           # progress in the Jenkins log
           node=$(grep ci.centos.org inventory | head -1)
           rsync -Hrlptv --stats -e "ssh -i ${WORKSPACE}/builder.key" continuous-atomic-overlay sig-atomic-buildscripts rsync-password.sh builder@${node}:
           build_success=true
-          if ! ssh -tt -i ${WORKSPACE}/builder.key builder@${node} ./run-build-and-rsync; then
+          if ! ssh -tt -i ${WORKSPACE}/builder.key builder@${node} ./continuous-atomic-overlay/run-build-and-rsync; then
             build_success=false
           fi
           rsync -Hrlptv --stats -e "ssh -i ${WORKSPACE}/builder.key" builder@${node}:build-logs $WORKSPACE/build-logs || true
