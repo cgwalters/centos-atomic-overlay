@@ -11,6 +11,7 @@ rsync --stats -av sig-atomic@artifacts.ci.centos.org::sig-atomic/rdgo/${build} .
 origdir=$(pwd)
 cd ${build}
 
+build_success=false
 if ${basedir}/run-build ${origdir}; then
     build_success=true
 fi
