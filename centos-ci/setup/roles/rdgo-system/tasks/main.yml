@@ -27,7 +27,9 @@
 # Also https://bugzilla.redhat.com/show_bug.cgi?id=1328212
 - lineinfile: dest=/etc/mock/site-defaults.cfg line="config_opts['use_nspawn'] = True"
 
-- user: name=builder groups=mock
+- user: name=builder groups=mock,wheel
+
+- lineinfile: "dest=/etc/sudoers state=present regexp='^%wheel' line='%wheel ALL=(ALL) NOPASSWD: ALL'"
 
 - authorized_key:
     user: builder
