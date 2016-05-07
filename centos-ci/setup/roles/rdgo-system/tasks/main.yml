@@ -7,9 +7,19 @@
       [walters-buildtools]
       name=Copr repo for buildtools owned by walters
       baseurl=https://copr-be.cloud.fedoraproject.org/results/walters/buildtools/epel-7-$basearch/
-      skip_if_unavailable=True
       gpgcheck=1
       gpgkey=https://copr-be.cloud.fedoraproject.org/results/walters/buildtools/pubkey.gpg
+      enabled=1
+      enabled_metadata=1
+
+- copy:
+    dest: /etc/yum.repos.d/centos7-atomic.repo
+    content: |
+      [centos7-atomic]
+      name=CentOS7 Atomic
+      baseurl=http://buildlogs.centos.org/centos/7/atomic/x86_64/Packages/
+      gpgcheck=1
+      gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
       enabled=1
       enabled_metadata=1
 
@@ -20,6 +30,7 @@
   with_items:
     - rsync
     - mock
+    - rpm-ostree
     - fedpkg
     - rpmdistro-gitoverlay
 
