@@ -27,7 +27,7 @@ if rpmdistro-gitoverlay build --touch-if-changed build.stamp --logdir=${origdir}
     build_success=true
 fi
 
-if ! test -d ostree/repo; then
+if ! test -d ostree/repo/objects; then
     mkdir -p ostree/repo
     ostree --repo=ostree/repo init --mode=archive-z2
 fi
