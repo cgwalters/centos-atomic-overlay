@@ -19,8 +19,10 @@
           branches:
             - rpmostree
       - git:
-          url: "https://github.com/CentOS/sig-atomic-buildscripts"
+          url: "https://github.com/cgwalters/sig-atomic-buildscripts"
           basedir: sig-atomic-buildscripts
+          branches:
+            - rdgo-continuous
     triggers:
       - github
       - timed: "H * * * *"
