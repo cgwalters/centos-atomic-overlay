@@ -90,4 +90,5 @@ components:
 
   - src: github:projectatomic/rpm-ostree
     distgit:
+      branch: master
       patches: drop
