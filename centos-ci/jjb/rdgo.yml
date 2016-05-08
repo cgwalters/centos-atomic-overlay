@@ -16,8 +16,6 @@
       - git:
           url: "https://github.com/cgwalters/continuous-atomic-overlay"
           basedir: continuous-atomic-overlay
-          branches:
-            - rpmostree
       - git:
           url: "https://github.com/cgwalters/sig-atomic-buildscripts"
           basedir: sig-atomic-buildscripts
