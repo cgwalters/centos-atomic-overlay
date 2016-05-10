@@ -3,6 +3,10 @@ set -xeuo pipefail
 
 origdir=$1
 buildscriptsdir=../sig-atomic-buildscripts
+if test -z "${WORKSPACE:-}"; then
+    echo "WORKSPACE must be set to a temporary directory"
+    exit 1
+fi
 
 if ! test -L overlay.yml; then
     ln -s ${overlaydir}/overlay.yml .
@@ -14,15 +18,18 @@ fi
 # Create this now so it always exists for Jenkins
 mkdir -p ${origdir}/build-logs
 
+# Delete files accidentally created in builddir
+rm -f fetch.stap build.stamp treecompose.stamp
+
 # Git fetch all the things
-rpmdistro-gitoverlay resolve --fetch-all --touch-if-changed fetch.stamp
-if ! test -f fetch.stamp; then
+rpmdistro-gitoverlay resolve --fetch-all --touch-if-changed ${WORKSPACE}/fetch.stamp
+if ! test -f ${WORKSPACE}/fetch.stamp; then
     exit 0
 fi
 
 # Do a build if something changed
 build_success=false
-if rpmdistro-gitoverlay build --touch-if-changed build.stamp --logdir=${origdir}/build-logs; then
+if rpmdistro-gitoverlay build --touch-if-changed ${WORKSPACE}/build.stamp --logdir=${origdir}/build-logs; then
     build_success=true
 fi
 
@@ -33,8 +40,8 @@ fi
 
 treefile=centos-atomic-host-continuous.json
 sed -i -e 's,^baseurl=.*,baseurl=file://'$(pwd)/build',' ${buildscriptsdir}/atomic-centos-continuous.repo
-sudo rpm-ostree compose tree --touch-if-changed=$(pwd)/treecompose.stamp --repo=ostree/repo ${buildscriptsdir}/${treefile}
-if test -f treecompose.stamp; then
+sudo rpm-ostree compose tree --touch-if-changed=${WORKSPACE}/treecompose.stamp --repo=ostree/repo ${buildscriptsdir}/${treefile}
+if test -f ${WORKSPACE}/treecompose.stamp; then
     ostree --repo=ostree/repo summary -u
     rpm-ostree db --repo=ostree/repo diff centos-atomic-host/7/x86_64/devel/continuous{^,}
     ostree --repo=ostree/repo static-delta generate centos-atomic-host/7/x86_64/devel/continuous
