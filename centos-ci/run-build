@@ -2,7 +2,6 @@
 set -xeuo pipefail
 
 origdir=$1
-overlaydir=../continuous-atomic-overlay
 buildscriptsdir=../sig-atomic-buildscripts
 
 if ! test -L overlay.yml; then
@@ -33,7 +32,6 @@ if ! test -d ostree/repo/objects; then
 fi
 
 treefile=centos-atomic-host-continuous.json
-cp ${overlaydir}/${treefile} ${overlaydir}/*.repo ${buildscriptsdir}/
 sed -i -e 's,^baseurl=.*,baseurl=file://'$(pwd)/build',' ${buildscriptsdir}/atomic-centos-continuous.repo
 sudo rpm-ostree compose tree --touch-if-changed=$(pwd)/treecompose.stamp --repo=ostree/repo ${buildscriptsdir}/${treefile}
 if test -f treecompose.stamp; then
