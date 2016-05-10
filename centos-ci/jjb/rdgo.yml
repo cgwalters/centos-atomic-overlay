@@ -21,7 +21,7 @@
           basedir: sig-atomic-buildscripts
     triggers:
       - github
-      - timed: "H * * * *"
+      - timed: "H/15 * * * *"
 
     wrappers:
       - workspace-cleanup
