@@ -47,7 +47,6 @@ components:
     distgit:
       name: python-docker-py
       branch: f24
-      freeze: 42f5d5ce8de9908d6f46b2288f1ffac5d357490e
 
   - distgit: go-srpm-macros
 
